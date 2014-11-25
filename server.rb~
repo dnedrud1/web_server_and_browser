@@ -17,7 +17,7 @@ loop {                         # Servers run forever
       client.puts "HTTP/1.0 404 Not Found"
     end
   when "POST"
-    p request
+    puts request
 	else
 	  puts "Invalid Request. Please check spelling."
   end
