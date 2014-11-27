@@ -1,16 +1,16 @@
 require 'socket'
 require 'json'
  
-host = 'localhost'     # The web server
-port = 2000            # Default HTTP port
+host = 'localhost'
+port = 2000   
 
 request = %Q{GET /index.html HTTP/1.0
-From: someuser@jmarshall.com
+From: someuser@gmail.com
 User-Agent: HTTPTool/1.0
 }
 
-post = %Q{POST /thanks.html HTTP/1.0
-From: frog@jmarshall.com
+post = %Q{POST /thanks.html.erb HTTP/1.0
+From: someuser@gmail.com
 User-Agent: HTTPTool/1.0
 Content-Type: text.txt
 }
@@ -18,7 +18,11 @@ Content-Type: text.txt
 puts "Welcome to a rudimentary web browser! Please chose an action."
 puts "1 << GET"
 puts "2 << POST"
-action = gets.chomp.downcase
+action = action = gets.chomp.downcase
+until action == "1" || action == "2"
+	puts "Oops! Please enter a valid number (1 or 2)"
+	action = gets.chomp.downcase
+end
 case action
 when "1"
   socket = TCPSocket.open(host,port)
@@ -29,14 +33,11 @@ when "2"
   puts "Please enter an email:"
   email = gets.chomp
   info = {:user => {:name=> name, :email=> email} }
-  post += "\n" + JSON.generate(info[:user])
+  post +="Content-Length: #{info.to_s.length}\n" + "\n" + JSON.generate(info[:user])
   socket = TCPSocket.open(host,port)
   socket.puts post
 end
 
-while line = socket.gets   # Read lines from the socket
-  puts line.chop      # And print with platform line terminator
+while line = socket.gets
+  puts line.chop  
 end
-# Split response at first blank line into headers and body
-#headers,body = response.split("\r\n\r\n", 2) 
-#print body                          # And display it
